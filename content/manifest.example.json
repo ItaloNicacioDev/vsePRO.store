@@ -1,0 +1,44 @@
+{
+  "_comment": "Formato do arquivo .vsepro (ZIP renomeado)",
+
+  "id":          "fx-zoom-punch",
+  "title":       "Zoom Punch Pack",
+  "description": "12 variações de zoom punch com diferentes timings e easings.",
+  "type":        "effect",
+  "version":     "1.0.0",
+  "author":      "VSE PRO Team",
+  "website":     "https://seu-usuario.github.io/vsepro",
+  "license":     "CC-BY-4.0",
+  "blenderMin":  "4.0",
+  "tags":        ["zoom", "punch", "motion", "energia"],
+
+  "files": [
+    "zoom_punch_x1.json",
+    "zoom_punch_x1_slow.json",
+    "zoom_punch_x2.json",
+    "zoom_punch_elastic.json",
+    "zoom_punch_bounce.json",
+    "zoom_punch_minimal.json"
+  ],
+
+  "_structure_explanation": {
+    "effects/":    "Arquivos JSON com parâmetros de vsepro_fx (transform, opacity, etc.)",
+    "luts/":       "Arquivos .cube e .3dl de LUT",
+    "sounds/":     "Arquivos .wav e .ogg livres de royalties",
+    "texts/":      "Arquivos JSON com preset de texto animado",
+    "transitions/":"Arquivos JSON com preset de transição"
+  },
+
+  "_effect_format": {
+    "_comment": "Estrutura de um arquivo de preset de efeito (.json)",
+    "preset_id":    "zoom_punch_x1",
+    "preset_name":  "Zoom Punch 1x",
+    "target":       "transform",
+    "keyframes": [
+      { "frame_offset": 0,  "scale_x": 1.0,  "scale_y": 1.0,  "interpolation": "BEZIER", "easing": "EASE_IN" },
+      { "frame_offset": 4,  "scale_x": 1.15, "scale_y": 1.15, "interpolation": "BEZIER", "easing": "EASE_OUT" },
+      { "frame_offset": 10, "scale_x": 1.15, "scale_y": 1.15, "interpolation": "BEZIER", "easing": "AUTO" },
+      { "frame_offset": 18, "scale_x": 1.0,  "scale_y": 1.0,  "interpolation": "BEZIER", "easing": "EASE_IN_OUT" }
+    ]
+  }
+}
