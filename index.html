@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VSE PRO Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#080810;--bg2:#0e0e1a;--surface:#12121f;--surface2:#1a1a2e;
+      --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
+      --accent:#7c6dff;--accent2:#ff5e7d;--accent3:#00e5b0;--accent4:#ffd166;
+      --text:#f0f0fa;--muted:#6b6b8a;--muted2:#9494b8;--r:14px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;z-index:0;opacity:.025;pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size:128px}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:99px}
+    .container{max-width:1280px;margin:0 auto;padding:0 28px;position:relative;z-index:1}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:200;background:rgba(8,8,16,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .nav-inner{display:flex;align-items:center;height:68px;gap:20px}
+    .logo{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:1.05rem;font-weight:700;color:var(--text);text-decoration:none;white-space:nowrap}
+    .logo-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;box-shadow:0 0 20px rgba(124,109,255,.4)}
+    .logo-badge{font-size:.6rem;letter-spacing:.12em;background:rgba(124,109,255,.15);border:1px solid rgba(124,109,255,.3);color:var(--accent);padding:2px 8px;border-radius:99px}
+    .nav-links{display:flex;gap:2px;margin-left:24px}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500;padding:7px 14px;border-radius:10px;transition:all .2s}
+    .nav-links a:hover{color:var(--text);background:rgba(255,255,255,.06)}
+    .nav-links a.active{color:var(--accent);background:rgba(124,109,255,.1)}
+    .nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 22px;border-radius:12px;font-size:.875rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;font-family:'Outfit',sans-serif;position:relative;overflow:hidden;white-space:nowrap}
+    .btn:active{transform:scale(.97)}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),#9b5cf6);color:#fff;box-shadow:0 4px 20px rgba(124,109,255,.35),inset 0 1px 0 rgba(255,255,255,.15)}
+    .btn-primary:hover{box-shadow:0 6px 28px rgba(124,109,255,.55);transform:translateY(-1px)}
+    .btn-outline{background:transparent;color:var(--muted2);border:1px solid var(--border2)}
+    .btn-outline:hover{color:var(--text);border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.04)}
+    .btn-free{background:linear-gradient(135deg,var(--accent3),#00b894);color:#000;font-weight:700;box-shadow:0 4px 20px rgba(0,229,176,.3)}
+    .btn-free:hover{box-shadow:0 6px 28px rgba(0,229,176,.5);transform:translateY(-1px)}
+    .btn-paid{background:linear-gradient(135deg,var(--accent2),#f97316);color:#fff;box-shadow:0 4px 20px rgba(255,94,125,.3)}
+    .btn-paid:hover{box-shadow:0 6px 28px rgba(255,94,125,.5);transform:translateY(-1px)}
+    .btn-ghost{background:rgba(255,255,255,.05);color:var(--muted2);border:1px solid var(--border)}
+    .btn-ghost:hover{background:rgba(255,255,255,.09);color:var(--text)}
+    .btn-sm{padding:7px 14px;font-size:.8rem;border-radius:9px}
+    .btn-lg{padding:14px 32px;font-size:1rem;border-radius:14px}
+    .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.25);transform:scale(0);animation:rippleAnim .55s linear;pointer-events:none}
+    @keyframes rippleAnim{to{transform:scale(4);opacity:0}}
+
+    /* HERO */
+    .hero{padding:110px 0 90px;position:relative;overflow:hidden;text-align:center}
+    .hero-glow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(124,109,255,.18) 0%,rgba(255,94,125,.08) 40%,transparent 70%);pointer-events:none}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(124,109,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,109,255,.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 70% at 50% 0%,black 30%,transparent 80%);pointer-events:none}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(124,109,255,.1);border:1px solid rgba(124,109,255,.25);color:var(--accent);font-size:.8rem;font-weight:600;letter-spacing:.06em;padding:5px 16px;border-radius:99px;margin-bottom:28px;text-transform:uppercase;animation:fadeDown .6s ease both}
+    .hero h1{font-size:clamp(2.4rem,6vw,4rem);font-weight:800;line-height:1.1;letter-spacing:-.02em;animation:fadeDown .6s .1s ease both}
+    .grad{background:linear-gradient(135deg,var(--accent) 20%,var(--accent2) 60%,var(--accent4) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-sub{max-width:520px;margin:20px auto 44px;font-size:1.1rem;color:var(--muted2);line-height:1.65;animation:fadeDown .6s .2s ease both}
+    .hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeDown .6s .3s ease both}
+    .hero-stats{display:flex;gap:0;justify-content:center;margin-top:72px;padding-top:36px;border-top:1px solid var(--border);animation:fadeDown .6s .4s ease both}
+    .stat-item{text-align:center;padding:0 40px;position:relative}
+    .stat-item+.stat-item::before{content:'';position:absolute;left:0;top:10%;height:80%;width:1px;background:var(--border)}
+    .stat-num{font-size:2.2rem;font-weight:800;font-family:'Space Mono',monospace;display:block;background:linear-gradient(135deg,var(--text),var(--muted2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .stat-label{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+
+    /* PARTICLES */
+    .particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    .particle{position:absolute;border-radius:50%;animation:floatUp linear infinite;opacity:0}
+    @keyframes floatUp{0%{transform:translateY(100%);opacity:0}10%{opacity:.7}90%{opacity:.2}100%{transform:translateY(-20%);opacity:0}}
+
+    /* FILTERS */
+    .filter-bar{padding:36px 0 24px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .filter-btn{padding:8px 18px;border-radius:99px;font-size:.83rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--muted);transition:all .2s;font-family:'Outfit',sans-serif;position:relative;overflow:hidden}
+    .filter-btn::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(135deg,var(--accent),var(--accent2));transition:opacity .2s}
+    .filter-btn span{position:relative;z-index:1}
+    .filter-btn:hover{color:var(--text);border-color:rgba(124,109,255,.4)}
+    .filter-btn.active{border-color:transparent;color:#fff}
+    .filter-btn.active::before{opacity:1}
+    .filter-free-btn.active{background:linear-gradient(135deg,var(--accent3),#00b894)!important;color:#000;border-color:transparent}
+    .filter-free-btn.active::before{opacity:0}
+    .search-wrap{margin-left:auto;display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px 16px;transition:border-color .2s,box-shadow .2s}
+    .search-wrap:focus-within{border-color:rgba(124,109,255,.5);box-shadow:0 0 0 3px rgba(124,109,255,.1)}
+    .search-wrap input{background:none;border:none;outline:none;color:var(--text);font-size:.88rem;width:200px;font-family:'Outfit',sans-serif}
+    .search-wrap input::placeholder{color:var(--muted)}
+
+    /* GRID */
+    .section{padding:0 0 80px}
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+    .section-header h2{font-size:1.1rem;font-weight:600;color:var(--muted2)}
+    .section-header span{font-size:.82rem;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+
+    /* CARD */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;transition:border-color .25s,transform .25s,box-shadow .25s}
+    .card:hover{border-color:rgba(124,109,255,.45);transform:translateY(-5px);box-shadow:0 16px 48px rgba(0,0,0,.5),0 0 0 1px rgba(124,109,255,.1)}
+    .card::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);transition:left .5s ease;z-index:1;pointer-events:none}
+    .card:hover::before{left:150%}
+    .card-thumb{aspect-ratio:16/9;position:relative;overflow:hidden}
+    .card-thumb-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transition:transform .4s ease}
+    .card:hover .card-thumb-inner{transform:scale(1.06)}
+    .card-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.6))}
+    .card-badges{position:absolute;top:10px;right:10px;z-index:2;display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+    .badge{font-size:.67rem;font-weight:700;padding:3px 9px;border-radius:99px;letter-spacing:.04em}
+    .badge-free{background:var(--accent3);color:#000}
+    .badge-paid{background:var(--accent2);color:#fff}
+    .badge-new{background:var(--accent4);color:#000}
+    .card-body{padding:18px}
+    .card-type{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+    .card-title{font-weight:700;font-size:1rem;color:var(--text);margin-bottom:6px;line-height:1.3}
+    .card-desc{font-size:.8rem;color:var(--muted);margin-bottom:14px;line-height:1.5}
+    .card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+    .tag{background:rgba(124,109,255,.1);border:1px solid rgba(124,109,255,.2);color:var(--accent);border-radius:6px;padding:2px 8px;font-size:.7rem;font-weight:600}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border)}
+    .card-price{font-weight:700;font-size:.9rem}
+    .card-price.free{color:var(--accent3)}
+    .card-price.paid{color:var(--accent2)}
+    .card-downloads{font-size:.75rem;color:var(--muted)}
+
+    /* THUMB */
+    .th-effect{background:linear-gradient(135deg,#0d0d2e,#1a0d3d,#0d1a3d)}
+    .th-text{background:linear-gradient(135deg,#0d0d2e,#1a0d1a)}
+    .th-audio{background:linear-gradient(135deg,#001a1a,#003322)}
+    .th-lut{background:linear-gradient(135deg,#1a0d0d,#2a0a1a)}
+    .th-transition{background:linear-gradient(135deg,#050f1a,#091a2a)}
+
+    /* MODAL */
+    .overlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px;animation:oIn .2s ease}
+    @keyframes oIn{from{opacity:0}}
+    .modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:700px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.7);animation:mIn .25s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes mIn{from{opacity:0;transform:scale(.92) translateY(20px)}}
+    .modal-header{display:flex;align-items:flex-start;justify-content:space-between;padding:26px 28px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:10}
+    .modal-close{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-family:'Outfit',sans-serif}
+    .modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+    .modal-preview{aspect-ratio:16/9;overflow:hidden;display:flex;align-items:center;justify-content:center}
+    .modal-body{padding:28px}
+    .modal-footer{padding:20px 28px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;background:var(--bg2);border-radius:0 0 20px 20px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+    .chip{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:.78rem;color:var(--muted2)}
+    .free-box{background:rgba(0,229,176,.06);border:1px solid rgba(0,229,176,.2);border-radius:14px;padding:20px}
+    .free-box-title{color:var(--accent3);font-weight:700;font-size:.9rem;margin-bottom:8px}
+    .paid-box{background:rgba(255,94,125,.06);border:1px solid rgba(255,94,125,.2);border-radius:14px;padding:24px;text-align:center}
+    .paid-box h3{color:var(--accent2);margin-bottom:8px;font-size:1rem}
+    .price-disp{font-size:2.4rem;font-weight:800;font-family:'Space Mono',monospace;color:var(--text);margin:12px 0}
+    .price-usd{font-size:1rem;color:var(--muted);font-weight:400;font-family:'Outfit',sans-serif}
+    .code-block{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-family:'Space Mono',monospace;font-size:.78rem;color:var(--accent3);margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .copy-btn{background:rgba(0,229,176,.1);border:1px solid rgba(0,229,176,.2);color:var(--accent3);border-radius:7px;padding:4px 10px;font-size:.72rem;cursor:pointer;white-space:nowrap;font-weight:600;transition:all .15s;font-family:'Outfit',sans-serif}
+    .copy-btn:hover{background:rgba(0,229,176,.2)}
+    .copy-btn.ok{background:rgba(0,229,176,.25)}
+
+    /* TOAST */
+    .toast-wrap{position:fixed;bottom:28px;right:28px;z-index:2000;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+    .toast{background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:16px 20px;min-width:300px;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:tIn .3s cubic-bezier(.34,1.56,.64,1);cursor:pointer}
+    @keyframes tIn{from{opacity:0;transform:translateX(20px) scale(.95)}}
+    .toast-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+    .toast-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+    .toast-ico.s{background:rgba(0,229,176,.15)}
+    .toast-ico.i{background:rgba(124,109,255,.15)}
+    .toast-ico.e{background:rgba(255,94,125,.15)}
+    .toast-title{font-weight:700;font-size:.88rem;color:var(--text)}
+    .toast-body{font-size:.8rem;color:var(--muted2);line-height:1.5}
+    .toast-prog{height:2px;border-radius:99px;margin-top:12px;background:var(--border)}
+    .toast-prog-bar{height:100%;border-radius:99px;background:var(--accent3);animation:progBar 5s linear forwards}
+    @keyframes progBar{from{width:100%}to{width:0%}}
+
+    /* CTA */
+    .cta-section{background:linear-gradient(135deg,rgba(124,109,255,.12),rgba(255,94,125,.08));border:1px solid rgba(124,109,255,.2);border-radius:24px;padding:60px 48px;text-align:center;margin:20px 0 60px;position:relative;overflow:hidden}
+    .cta-section::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(124,109,255,.15),transparent 70%);pointer-events:none}
+    .cta-section h2{font-size:1.8rem;margin-bottom:12px}
+    .cta-section>p{max-width:480px;margin:0 auto 32px;color:var(--muted2)}
+    .cta-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .install-cmd{margin-top:24px;display:inline-block;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-family:'Space Mono',monospace;font-size:.8rem;color:var(--accent3)}
+
+    /* FOOTER */
+    footer{border-top:1px solid var(--border);padding:48px 0;text-align:center}
+    .footer-links{display:flex;gap:24px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+    .footer-links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .15s}
+    .footer-links a:hover{color:var(--text)}
+    footer p{color:var(--muted);font-size:.82rem}
+
+    /* MISC */
+    .empty-state{text-align:center;padding:80px 20px;color:var(--muted)}
+    .empty-icon{font-size:3.5rem;margin-bottom:16px;opacity:.5}
+    @keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(2)}}
+    .fade-in{animation:fadeIn .4s ease both}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}}
+
+    @media(max-width:700px){
+      .nav-links,.search-wrap{display:none}
+      .hero{padding:70px 0 60px}
+      .hero-stats{flex-wrap:wrap}
+      .stat-item{padding:16px 20px;flex:1 1 40%}
+      .stat-item+.stat-item::before{display:none}
+      .grid{grid-template-columns:1fr}
+      .cta-section{padding:36px 24px}
+      .modal-footer{flex-direction:column}
+      .modal-footer .btn{width:100%;justify-content:center}
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+  const { useState, useEffect, useMemo, useCallback, useRef } = React;
+
+  /* CONFIG */
+  const CONFIG = {
+    githubUser:"seu-usuario", githubRepo:"vsepro", releaseTag:"v1.0.0",
+    gumroadUser:"vsepro", gumroadAddon:"vsepro",
+    vercelApi:"", contactEmail:"contato@vsepro.dev",
+  };
+  const GH    = `https://github.com/${CONFIG.githubUser}/${CONFIG.githubRepo}`;
+  const GH_DL = `${GH}/releases/download/${CONFIG.releaseTag}`;
+  const GM    = `https://${CONFIG.gumroadUser}.gumroad.com`;
+
+  /* DATA */
+  const CONTENT = [
+    {id:"fx-zoom-punch",     type:"effect",    title:"Zoom Punch Pack",            description:"12 variações de zoom punch com diferentes timings e easings. Compatível com qualquer strip de vídeo.",           emoji:"⚡", tags:["zoom","punch","energia","motion"],          tier:"free", price:null,     priceUSD:null,    downloads:1240,version:"1.0",blenderMin:"4.0",fileSize:"18 KB", downloadUrl:`${GH_DL}/fx-zoom-punch.vsepro`,     isNew:true},
+    {id:"fx-ken-burns-pro",  type:"effect",    title:"Ken Burns Pro",              description:"30 movimentos de câmera cinematográficos: pan, tilt, zoom, dolly. Curvas personalizáveis.",                     emoji:"🎬", tags:["ken burns","câmera","pan","zoom"],           tier:"paid",price:"R$ 29",  priceUSD:"$5.99", downloads:430, version:"1.2",blenderMin:"4.0",fileSize:"45 KB", gumroadUrl:`${GM}/l/vsepro-ken-burns`,           isNew:false},
+    {id:"fx-glitch-pack",    type:"effect",    title:"Glitch & Distortion Pack",   description:"15 efeitos de glitch, VHS, distorção digital e chromatic aberration pré-animados.",                           emoji:"📺", tags:["glitch","vhs","distorção","retro"],          tier:"paid",price:"R$ 49",  priceUSD:"$9.99", downloads:287, version:"1.0",blenderMin:"4.0",fileSize:"92 KB", gumroadUrl:`${GM}/l/vsepro-glitch`,              isNew:true},
+    {id:"fx-film-look",      type:"effect",    title:"Film Look Presets",          description:"Grain, flicker, vignette e color grade combinados para simular look de película real.",                        emoji:"🎞️",tags:["filme","grain","analógico","cinematic"],  tier:"free", price:null,     priceUSD:null,    downloads:2100,version:"1.1",blenderMin:"4.0",fileSize:"24 KB", downloadUrl:`${GH_DL}/fx-film-look.vsepro`,      isNew:false},
+    {id:"txt-lower-thirds",  type:"text",      title:"Lower Thirds Essentials",    description:"8 chamadas animadas com entrada e saída suaves. Editáveis, com fonte customizável.",                          emoji:"📝", tags:["lower third","chamada","título","animado"],  tier:"free", price:null,     priceUSD:null,    downloads:3400,version:"1.3",blenderMin:"4.0",fileSize:"12 KB", downloadUrl:`${GH_DL}/txt-lower-thirds.vsepro`,  isNew:false},
+    {id:"txt-titles-cinematic",type:"text",    title:"Cinematic Title Pack",       description:"20 templates de título estilo cinema: abertura com fade, split text, typewriter e glitch.",                   emoji:"🎭", tags:["título","abertura","cinema","text"],          tier:"paid",price:"R$ 39",  priceUSD:"$7.99", downloads:512, version:"1.0",blenderMin:"4.0",fileSize:"58 KB", gumroadUrl:`${GM}/l/vsepro-cinematic-titles`,    isNew:true},
+    {id:"txt-subtitles-style",type:"text",     title:"Subtitle Styles Pack",       description:"10 estilos de legenda pré-formatados compatíveis com importação .srt do VSE PRO.",                           emoji:"💬", tags:["legenda","subtitle","srt","caption"],        tier:"free", price:null,     priceUSD:null,    downloads:1890,version:"1.0",blenderMin:"4.0",fileSize:"8 KB",  downloadUrl:`${GH_DL}/txt-subtitles.vsepro`,     isNew:false},
+    {id:"sfx-transitions",   type:"sound",     title:"Transition SFX Pack",        description:"40 efeitos sonoros de transição: whoosh, swipe, impact, cinematic boom. Livre de royalties.",                emoji:"🔊", tags:["sfx","transição","whoosh","cinematic"],      tier:"free", price:null,     priceUSD:null,    downloads:4200,version:"2.0",blenderMin:"4.0",fileSize:"18 MB", downloadUrl:`${GH_DL}/sfx-transitions.vsepro`,   isNew:false},
+    {id:"sfx-ui-sounds",     type:"sound",     title:"UI & Notification Sounds",   description:"25 sons de interface, notificações, cliques e beeps modernos para vídeos instrucionais.",                    emoji:"🔔", tags:["ui","interface","notification","beep"],      tier:"free", price:null,     priceUSD:null,    downloads:1650,version:"1.0",blenderMin:"4.0",fileSize:"6 MB",  downloadUrl:`${GH_DL}/sfx-ui.vsepro`,            isNew:false},
+    {id:"bgm-ambient-pack",  type:"sound",     title:"Ambient Background Music",   description:"12 trilhas ambiente loopáveis (corporate, tech, documentary, emotional). Livre de royalties.",               emoji:"🎵", tags:["música","ambiente","loop","royalty-free"],   tier:"paid",price:"R$ 59",  priceUSD:"$11.99",downloads:320, version:"1.0",blenderMin:"4.0",fileSize:"85 MB", gumroadUrl:`${GM}/l/vsepro-ambient`,             isNew:false},
+    {id:"lut-cinematic-pack",type:"lut",       title:"Cinematic LUT Collection",   description:"20 LUTs .cube profissionais: Teal & Orange, Bleach Bypass, Film Emulation, B&W.",                           emoji:"🎨", tags:["lut","color","cinematic","grade"],            tier:"free", price:null,     priceUSD:null,    downloads:5800,version:"1.0",blenderMin:"4.0",fileSize:"1.2 MB",downloadUrl:`${GH_DL}/lut-cinematic.vsepro`,     isNew:false},
+    {id:"lut-filmic-pro",    type:"lut",       title:"Filmic Pro LUT Bundle",      description:"50 LUTs premium: emulação de câmeras Sony, ARRI, RED, Fuji. Intensidade ajustável no VSE PRO.",              emoji:"📷", tags:["lut","arri","sony","filmic","premium"],      tier:"paid",price:"R$ 79",  priceUSD:"$15.99",downloads:198, version:"1.0",blenderMin:"4.0",fileSize:"4.8 MB",gumroadUrl:`${GM}/l/vsepro-filmic-luts`,         isNew:true},
+    {id:"tr-smooth-pack",    type:"transition",title:"Smooth Transition Pack",     description:"16 transições suaves: dissolve, push, slide, wipe com timing ajustável via keyframes.",                      emoji:"✨", tags:["transição","dissolve","slide","wipe"],        tier:"free", price:null,     priceUSD:null,    downloads:3100,version:"1.2",blenderMin:"4.0",fileSize:"28 KB", downloadUrl:`${GH_DL}/tr-smooth.vsepro`,         isNew:false},
+    {id:"tr-dynamic-pack",   type:"transition",title:"Dynamic Motion Transitions", description:"24 transições dinâmicas com motion blur: zoom, spin, whip pan, light leak e film burn.",                    emoji:"🌀", tags:["transição","zoom","spin","light leak"],       tier:"paid",price:"R$ 45",  priceUSD:"$8.99", downloads:267, version:"1.0",blenderMin:"4.0",fileSize:"1.1 MB",gumroadUrl:`${GM}/l/vsepro-dynamic-transitions`, isNew:true},
+  ];
+
+  const TYPE_LABELS = {all:"Todos",effect:"Efeitos",text:"Textos",sound:"Áudio & SFX",lut:"LUTs",transition:"Transições"};
+  const TYPE_ICONS  = {all:"🗂️",effect:"⚡",text:"📝",sound:"🔊",lut:"🎨",transition:"✨"};
+  const THUMB_CLS   = {effect:"th-effect",text:"th-text",sound:"th-audio",lut:"th-lut",transition:"th-transition"};
+
+  /* Ripple */
+  function ripple(e, el) {
+    const r = el.getBoundingClientRect(), s = Math.max(r.width,r.height)*2;
+    const sp = document.createElement('span');
+    sp.className = 'ripple';
+    sp.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;
+    el.appendChild(sp);
+    sp.addEventListener('animationend', () => sp.remove());
+  }
+
+  function RBtn({cls,onClick,children,href,target,style}) {
+    const ref = useRef();
+    const click = e => { ripple(e,ref.current); onClick&&onClick(e); };
+    const Tag = href?'a':'button';
+    return <Tag ref={ref} className={`btn ${cls||''}`} onClick={click} href={href} target={target} rel={target==='_blank'?'noopener noreferrer':undefined} style={style}>{children}</Tag>;
+  }
+
+  /* Waveform */
+  function Waveform({bars=22,h=64}) {
+    const d = useMemo(()=>Array.from({length:bars},(_,i)=>({ht:18+Math.random()*44,dl:`${(i*.055).toFixed(2)}s`})),[]);
+    return (
+            <div style={{display:'flex',alignItems:'center',gap:3,height:h,padding:'0 16px'}}>
+              {d.map((b,i)=><div key={i} style={{width:4,height:b.ht,borderRadius:2,flexShrink:0,background:'linear-gradient(to top,#00e5b0,rgba(0,229,176,.2))',animation:`wave 1.2s ease-in-out ${b.dl} infinite`}}/>)}
+            </div>
+    );
+  }
+
+  /* Card Thumb */
+  function Thumb({item}) {
+    const cls = THUMB_CLS[item.type]||'th-effect';
+    if(item.type==='sound') return <div className={`card-thumb-inner ${cls}`} style={{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center'}}><Waveform bars={18} h={54}/></div>;
+    if(item.type==='lut') return (
+            <div className="card-thumb-inner" style={{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',overflow:'hidden'}}>
+              <div style={{position:'absolute',inset:0,display:'flex'}}>
+                {['#f72585','#7209b7','#3a0ca3','#4361ee','#4cc9f0'].map((c,i)=><div key={i} style={{flex:1,background:c,opacity:.7}}/>)}
+              </div>
+              <div style={{position:'relative',zIndex:1,fontSize:'2.8rem',filter:'drop-shadow(0 2px 12px rgba(0,0,0,.9))'}}>{item.emoji}</div>
+            </div>
+    );
+    if(item.type==='transition') return (
+            <div className={`card-thumb-inner ${cls}`} style={{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',overflow:'hidden'}}>
+              <div style={{position:'absolute',left:'38%',top:0,bottom:0,width:2,background:'linear-gradient(to bottom,transparent,#7c6dff,transparent)',boxShadow:'0 0 24px #7c6dff'}}/>
+              <div style={{fontSize:'2.8rem',position:'relative'}}>{item.emoji}</div>
+            </div>
+    );
+    return <div className={`card-thumb-inner ${cls}`} style={{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{fontSize:'3.2rem',filter:'drop-shadow(0 0 24px rgba(124,109,255,.7))'}}>{item.emoji}</div></div>;
+  }
+
+  /* Card */
+  function Card({item,onOpen}) {
+    const ref = useRef();
+    return (
+            <div ref={ref} className="card" style={{overflow:'hidden',position:'relative'}}
+                 onClick={e=>{ripple(e,ref.current);setTimeout(()=>onOpen(item),80)}}>
+              <div className="card-thumb">
+                <Thumb item={item}/>
+                <div className="card-overlay"/>
+                <div className="card-badges">
+                  {item.isNew&&<span className="badge badge-new">NOVO</span>}
+                  <span className={`badge badge-${item.tier}`}>{item.tier==='free'?'GRÁTIS':item.price}</span>
+                </div>
+              </div>
+              <div className="card-body">
+                <div className="card-type">{TYPE_ICONS[item.type]} {TYPE_LABELS[item.type]}</div>
+                <div className="card-title">{item.title}</div>
+                <div className="card-desc">{item.description}</div>
+                <div className="card-tags">{item.tags.slice(0,3).map(t=><span key={t} className="tag">{t}</span>)}</div>
+                <div className="card-footer">
+                  <span className={`card-price ${item.tier}`}>{item.tier==='free'?'✓ Grátis':item.price}</span>
+                  <span className="card-downloads">↓ {item.downloads.toLocaleString('pt-BR')}</span>
+                </div>
+              </div>
+            </div>
+    );
+  }
+
+  /* CopyBtn */
+  function CopyBtn({text}) {
+    const [ok,setOk] = useState(false);
+    return <button className={`copy-btn${ok?' ok':''}`} onClick={()=>{navigator.clipboard?.writeText(text).catch(()=>{});setOk(true);setTimeout(()=>setOk(false),2000)}}>{ok?'✓ Copiado!':'Copiar'}</button>;
+  }
+
+  /* Modal */
+  function Modal({item,onClose,onToast}) {
+    const [loading,setLoading] = useState(false);
+    const [done,setDone] = useState(false);
+    useEffect(()=>{
+      const fn=e=>e.key==='Escape'&&onClose();
+      document.addEventListener('keydown',fn);
+      document.body.style.overflow='hidden';
+      return()=>{document.removeEventListener('keydown',fn);document.body.style.overflow=''};
+    },[]);
+    const go = () => {
+      if(item.tier==='paid'){window.open(item.gumroadUrl,'_blank');onToast({t:'i',title:'Redirecionando para Gumroad',body:`Abrindo página de compra para "${item.title}"`});return;}
+      setLoading(true);
+      const a=document.createElement('a');a.href=item.downloadUrl;a.download=`${item.id}.vsepro`;a.click();
+      setTimeout(()=>{setLoading(false);setDone(true);onToast({t:'s',title:`${item.title} baixado!`,body:`Arquivo ${item.id}.vsepro salvo. Importe no VSE PRO → Marketplace.`});onClose();},900);
+    };
+    const cmd = `vsepro.install_content("${item.id}")`;
+    return (
+            <div className="overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+              <div className="modal">
+                <div className="modal-header">
+                  <div>
+                    <div className="card-type">{TYPE_ICONS[item.type]} {TYPE_LABELS[item.type]}</div>
+                    <h2 style={{fontSize:'1.35rem',fontWeight:800,color:'var(--text)',lineHeight:1.2}}>{item.title}</h2>
+                  </div>
+                  <button className="modal-close" onClick={onClose}>✕</button>
+                </div>
+                <div className="modal-preview" style={{background:item.type==='sound'?'linear-gradient(135deg,#001a1a,#003322)':'linear-gradient(135deg,#0d0d2e,#0d1a3d)'}}>
+                  {item.type==='sound'?<Waveform bars={28} h={90}/>:<span style={{fontSize:'6rem',filter:'drop-shadow(0 0 40px rgba(124,109,255,.6))'}}>{item.emoji}</span>}
+                </div>
+                <div className="modal-body">
+                  <div className="chips">
+                    <span className="chip">📦 {item.fileSize}</span>
+                    <span className="chip">🔧 Blender {item.blenderMin}+</span>
+                    <span className="chip">🏷️ v{item.version}</span>
+                    <span className="chip">↓ {item.downloads.toLocaleString('pt-BR')} downloads</span>
+                  </div>
+                  <p style={{color:'var(--muted2)',lineHeight:1.65,marginBottom:20}}>{item.description}</p>
+                  <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:24}}>
+                    {item.tags.map(t=><span key={t} className="tag">{t}</span>)}
+                  </div>
+                  {item.tier==='free'?(
+                          <div className="free-box">
+                            <div className="free-box-title">🎁 Conteúdo Gratuito</div>
+                            <p style={{fontSize:'.83rem',color:'var(--muted2)',marginBottom:10}}>Instale direto no Blender via VSE PRO, ou baixe o arquivo .vsepro manualmente.</p>
+                            <div className="code-block"><code>{cmd}</code><CopyBtn text={cmd}/></div>
+                            <p style={{fontSize:'.73rem',color:'var(--muted)',marginTop:8}}>Cole no Script Editor do Blender, ou use VSE PRO → Marketplace</p>
+                          </div>
+                  ):(
+                          <div className="paid-box">
+                            <h3>🔒 Conteúdo Premium</h3>
+                            <p style={{fontSize:'.83rem',color:'var(--muted2)',margin:'8px 0 12px'}}>Adquira no Gumroad. Após a compra, ative a licença no VSE PRO Marketplace.</p>
+                            <div className="price-disp">{item.price} <span className="price-usd">({item.priceUSD})</span></div>
+                          </div>
+                  )}
+                </div>
+                <div className="modal-footer">
+                  <RBtn cls="btn-outline btn-sm" onClick={onClose}>Fechar</RBtn>
+                  {item.tier==='free'?(
+                          <>
+                            <RBtn cls="btn-ghost btn-sm" onClick={()=>{navigator.clipboard?.writeText(cmd).catch(()=>{});onToast({t:'i',title:'Comando copiado!',body:'Cole no Script Editor do Blender.'})}}>📋 Copiar Comando</RBtn>
+                            <RBtn cls="btn-free" onClick={go} style={{minWidth:160}}>{loading?'⏳ Baixando…':done?'✓ Baixado!':'⬇ Baixar .vsepro'}</RBtn>
+                          </>
+                  ):(
+                          <RBtn cls="btn-paid btn-lg" onClick={go}>🛒 Comprar — {item.price}</RBtn>
+                  )}
+                </div>
+              </div>
+            </div>
+    );
+  }
+
+  /* Toast */
+  function Toast({t,onDismiss}) {
+    useEffect(()=>{const x=setTimeout(onDismiss,5000);return()=>clearTimeout(x);},[]);
+    const ico = {s:'✅',i:'💡',e:'❌'};
+    const icoCls = {s:'s',i:'i',e:'e'};
+    return (
+            <div className="toast" onClick={onDismiss}>
+              <div className="toast-head">
+                <div className={`toast-ico ${icoCls[t.t]||'i'}`}>{ico[t.t]||'💡'}</div>
+                <span className="toast-title">{t.title}</span>
+              </div>
+              <div className="toast-body">{t.body}</div>
+              <div className="toast-prog"><div className="toast-prog-bar"/></div>
+            </div>
+    );
+  }
+
+  /* Particles */
+  function Particles() {
+    const pts = useMemo(()=>Array.from({length:14},(_,i)=>({
+      left:`${5+Math.random()*90}%`,size:2+Math.random()*3,
+      dur:`${8+Math.random()*12}s`,del:`${Math.random()*10}s`,
+      col:['#7c6dff','#ff5e7d','#00e5b0','#ffd166'][i%4],
+    })),[]);
+    return (
+            <div className="particles">
+              {pts.map((p,i)=><div key={i} className="particle" style={{left:p.left,bottom:'-10px',width:p.size,height:p.size,background:p.col,animationDuration:p.dur,animationDelay:p.del,boxShadow:`0 0 ${p.size*3}px ${p.col}`}}/>)}
+            </div>
+    );
+  }
+
+  /* APP */
+  function App() {
+    const [filter,setFilter]=useState('all');
+    const [tier,setTier]=useState('all');
+    const [search,setSearch]=useState('');
+    const [modal,setModal]=useState(null);
+    const [toasts,setToasts]=useState([]);
+    const addToast=t=>setToasts(p=>[...p,{...t,id:Date.now()+Math.random()}]);
+    const rmToast=id=>setToasts(p=>p.filter(x=>x.id!==id));
+
+    const filtered=useMemo(()=>CONTENT.filter(item=>{
+      if(filter!=='all'&&item.type!==filter)return false;
+      if(tier==='free'&&item.tier!=='free')return false;
+      if(tier==='paid'&&item.tier!=='paid')return false;
+      if(search){const q=search.toLowerCase();return item.title.toLowerCase().includes(q)||item.description.toLowerCase().includes(q)||item.tags.some(t=>t.includes(q));}
+      return true;
+    }),[filter,tier,search]);
+
+    const totalFree=CONTENT.filter(c=>c.tier==='free').length;
+    const totalPaid=CONTENT.filter(c=>c.tier==='paid').length;
+    const totalDL=CONTENT.reduce((s,c)=>s+c.downloads,0);
+
+    return (
+            <>
+              {/* NAV */}
+              <nav>
+                <div className="container">
+                  <div className="nav-inner">
+                    <a href="#" className="logo">
+                      <div className="logo-icon">🎬</div>
+                      <span>VSE PRO</span>
+                      <span className="logo-badge">MARKETPLACE</span>
+                    </a>
+                    <div className="nav-links">
+                      <a href="#content" className="active">Explorar</a>
+                      <a href="#docs">Instalação</a>
+                      <a href={GH} target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </div>
+                    <div className="nav-right">
+                      <RBtn cls="btn-primary btn-sm" href={`${GM}/l/${CONFIG.gumroadAddon}`} target="_blank">Obter VSE PRO →</RBtn>
+                    </div>
+                  </div>
+                </div>
+              </nav>
+
+              {/* HERO */}
+              <section className="hero">
+                <div className="hero-glow"/><div className="hero-grid"/><Particles/>
+                <div className="container">
+                  <div className="hero-eyebrow"><span>🔌</span> Plugin profissional para Blender VSE</div>
+                  <h1>Eleve suas edições com<br/><span className="grad">efeitos, sons e textos</span></h1>
+                  <p className="hero-sub">Templates prontos para VSE PRO — instale com um clique diretamente no Blender, sem sair do fluxo de edição.</p>
+                  <div className="hero-actions">
+                    <RBtn cls="btn-primary btn-lg" href="#content" onClick={()=>{}}>🗂️ Explorar Templates</RBtn>
+                    <RBtn cls="btn-outline btn-lg" href={GH} target="_blank">Ver no GitHub ↗</RBtn>
+                  </div>
+                  <div className="hero-stats">
+                    {[{n:totalFree,l:'Grátis'},{n:totalPaid,l:'Premium'},{n:`${(totalDL/1000).toFixed(1)}k`,l:'Downloads'},{n:'4.0+',l:'Blender'}].map(s=>(
+                            <div key={s.l} className="stat-item">
+                              <span className="stat-num">{s.n}</span>
+                              <span className="stat-label">{s.l}</span>
+                            </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* CONTENT */}
+              <section className="section" id="content">
+                <div className="container">
+                  <div className="filter-bar">
+                    {Object.entries(TYPE_LABELS).map(([k,l])=>(
+                            <button key={k} className={`filter-btn${filter===k?' active':''}`} onClick={()=>setFilter(k)}>
+                              <span>{TYPE_ICONS[k]} {l}</span>
+                            </button>
+                    ))}
+                    <button className={`filter-btn filter-free-btn${tier==='free'?' active':''}`} onClick={()=>setTier(t=>t==='free'?'all':'free')}>
+                      <span>🎁 Grátis</span>
+                    </button>
+                    <div className="search-wrap">
+                      <span style={{color:'var(--muted)'}}>🔍</span>
+                      <input placeholder="Buscar templates…" value={search} onChange={e=>setSearch(e.target.value)}/>
+                      {search&&<span style={{cursor:'pointer',color:'var(--muted)',fontSize:'.9rem'}} onClick={()=>setSearch('')}>✕</span>}
+                    </div>
+                  </div>
+                  <div className="section-header">
+                    <h2>{filtered.length} template{filtered.length!==1?'s':''}</h2>
+                    <span>Clique para ver detalhes e instalar</span>
+                  </div>
+                  {filtered.length===0?(
+                          <div className="empty-state">
+                            <div className="empty-icon">🔍</div>
+                            <p>Nenhum template encontrado para "<strong style={{color:'var(--text)'}}>{search}</strong>"</p>
+                            <button className="btn btn-ghost btn-sm" style={{marginTop:16}} onClick={()=>setSearch('')}>Limpar busca</button>
+                          </div>
+                  ):(
+                          <div className="grid">
+                            {filtered.map((item,i)=>(
+                                    <div key={item.id} className="fade-in" style={{animationDelay:`${i*.04}s`}}>
+                                      <Card item={item} onOpen={setModal}/>
+                                    </div>
+                            ))}
+                          </div>
+                  )}
+                </div>
+              </section>
+
+              {/* CTA */}
+              <section id="docs">
+                <div className="container">
+                  <div className="cta-section">
+                    <h2>🔌 Instalação Direta no Blender</h2>
+                    <p>Com o VSE PRO instalado, acesse o Marketplace sem sair do Blender. Baixe, instale e aplique em segundos.</p>
+                    <div className="cta-actions">
+                      <RBtn cls="btn-primary btn-lg" href={`${GM}/l/${CONFIG.gumroadAddon}`} target="_blank">Adquirir VSE PRO</RBtn>
+                      <RBtn cls="btn-outline btn-lg" href={`${GH}/releases`} target="_blank">GitHub Releases ↗</RBtn>
+                    </div>
+                    <div className="install-cmd">Edit → Preferences → Add-ons → Install → vsepro_v1.2.0.zip</div>
+                  </div>
+                </div>
+              </section>
+
+              {/* FOOTER */}
+              <footer>
+                <div className="container">
+                  <div className="footer-links">
+                    <a href={GH}>GitHub</a>
+                    <a href={`${GM}/l/${CONFIG.gumroadAddon}`}>Gumroad</a>
+                    <a href={`mailto:${CONFIG.contactEmail}`}>Contato</a>
+                    <a href="#" onClick={e=>{e.preventDefault();addToast({t:'i',title:'Em breve',body:'Política de uso sendo elaborada.'})}}>Política de uso</a>
+                  </div>
+                  <p>© 2025 VSE PRO · Feito com 🎬 para a comunidade Blender</p>
+                </div>
+              </footer>
+
+              {/* MODAL */}
+              {modal&&<Modal item={modal} onClose={()=>setModal(null)} onToast={addToast}/>}
+
+              {/* TOASTS */}
+              <div className="toast-wrap">
+                {toasts.map(t=><Toast key={t.id} t={t} onDismiss={()=>rmToast(t.id)}/>)}
+              </div>
+            </>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
